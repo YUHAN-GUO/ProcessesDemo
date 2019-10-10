@@ -17,12 +17,6 @@ public class MyAbb extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        Utils.init(this);
-        SoulPermission.init(this);
-        LiveEventBus
-                .config()
-                .supportBroadcast(this)
-                .lifecycleObserverAlwaysActive(true)
-                .autoClear(false);
+
     }
 }

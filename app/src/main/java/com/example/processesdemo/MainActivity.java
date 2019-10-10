@@ -1,42 +1,47 @@
 package com.example.processesdemo;
 
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.arch.lifecycle.Observer;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.Settings;
 import android.support.v4.content.FileProvider;
-import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.example.processesdemo.bean.LocationBean;
 import com.example.processesdemo.down.DownLoadHelper;
-import com.example.processesdemo.down.DownloadUtils;
+import com.example.processesdemo.http.HttpUtils;
+import com.example.processesdemo.http.IBaseHttpResultCallBack;
 import com.example.processesdemo.http.JsDownloadListener;
+import com.example.processesdemo.http.MyDataService;
 import com.example.processesdemo.service.ListenerService;
 import com.example.processesdemo.service.NotificationService;
-import com.example.processesdemo.utils.PermissionConstants;
+import com.example.processesdemo.utils.DeviceUtils;
+import com.example.processesdemo.utils.LocationUtils;
 import com.example.processesdemo.utils.PermissionUtils;
-import com.example.processesdemo.utils.Utils;
 import com.example.processesdemo.utils.mylog.Logger;
 import com.jeremyliao.liveeventbus.LiveEventBus;
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
-import io.reactivex.disposables.Disposable;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class MainActivity extends RxAppCompatActivity implements View.OnClickListener {
 
@@ -58,6 +63,8 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
 
     private String apkName = "ZhouzhiHouse.apk";
     private File apkFile;
+    private Button btn5;
+    private Button btn6;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,6 +112,10 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
         btn4 = (Button) findViewById(R.id.btn4);
         btn4.setOnClickListener(this);
 
+        btn5 = (Button) findViewById(R.id.btn5);
+        btn5.setOnClickListener(this);
+        btn6 = (Button) findViewById(R.id.btn6);
+        btn6.setOnClickListener(this);
     }
 
     @Override
@@ -147,7 +158,73 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
 //                Logger.d("%s+++++++++%s","guoyh",apkPath);
                 downLoad();
                 break;
+            case R.id.btn5:
+                getId();
+                break;
+                /*
+                获取当前位置 所需权限
+                <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+<uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+<uses-permission android:name="android.permission.INTERNET" />
+                 */
+            case R.id.btn6:
+                //http://ip.taobao.com/service/getIpInfo.php?ip=123.149.237.181
+                //http://ip.taobao.com/service/getIpInfo.php?ip=123.149.237.181
+
+//                HttpUtils.obserableNoBaseUtils(MyDataService.getService().getLocation(), new IBaseHttpResultCallBack<LocationBean>() {
+//                    @Override
+//                    public void onSuccess(LocationBean data) {
+//                        Logger.d("%s++++++++++%s","guoyh",data.toString());
+//                    }
+//
+//                    @Override
+//                    public void onError(Throwable e) {
+//                        Logger
+//                                .d("%s++++++++++%s","guoyh",e.getMessage());
+//                    }
+//                });
+
+                LocationUtils.register(this, 0, 0, new LocationUtils.OnLocationChangeListener() {
+                    @Override
+                    public void getLastKnownLocation(Location location) {
+                        Log.e("xyh", "onLocationChanged: " + location.getLatitude());
+                    }
+
+                    @Override
+                    public void onLocationChanged(Location location) {
+                        //位置信息变化时触发
+                        Log.e("guoyh", "定位方式：" + location.getProvider());
+                        Log.e("guoyh", "纬度：" + location.getLatitude());
+                        Log.e("guoyh", "经度：" + location.getLongitude());
+                        Log.e("guoyh", "海拔：" + location.getAltitude());
+                        Log.e("guoyh", "时间：" + location.getTime());
+                        Log.e("guoyh", "国家：" + LocationUtils.getCountryName(MainActivity.this, location.getLatitude(), location.getLongitude()));
+                        Log.e("guoyh", "获取地理位置：" + LocationUtils.getAddress(MainActivity.this, location.getLatitude(), location.getLongitude()));
+                        Log.e("guoyh", "所在地：" + LocationUtils.getLocality(MainActivity.this, location.getLatitude(), location.getLongitude()));
+                        Log.e("guoyh", "所在街道：" + LocationUtils.getStreet(MainActivity.this, location.getLatitude(), location.getLongitude()));
+
+                    }
+
+                    @Override
+                    public void onStatusChanged(String provider, int status, Bundle extras) {
+                    }
+                });
+                break;
         }
+    }
+
+    private void getId() {
+        try {
+//            getAsync();
+        } catch (Exception e) {
+
+            Logger.d("%s++++++++++++%s", "guoyh", e.getMessage());
+        }
+        String UUID = DeviceUtils.getUUID();
+        Logger.d("%s++++++++++++%s", "guoyh", UUID);
     }
 
     private void downLoad() {
@@ -203,12 +280,12 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
 
     private void checkUsagePermiss(boolean b) {
         if (PermissionUtils.isGrantedUsageStats()) {
-           if (btn2.getText().toString().equals("完成任务")){
-               startListenerService(false);
+            if (btn2.getText().toString().equals("完成任务")) {
+                startListenerService(false);
                 btn2.setText("申请任务");
-           }else{
-               startListenerService(true);
-           }
+            } else {
+                startListenerService(true);
+            }
         } else {
             if (b) {
                 Toast.makeText(this, "您拒绝开启访问使用权限", Toast.LENGTH_SHORT).show();
@@ -359,6 +436,5 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
         }
 
     }
-
 
 }

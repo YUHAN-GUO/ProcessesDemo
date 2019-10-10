@@ -62,54 +62,8 @@ public class DownLoadHelper {
     /**
      * 将输入流写入文件
      *
-     * @param inputString
+     * @param body
      * @param file
-     */
-    private void writeFile(InputStream inputString, File file) {
-
-
-    }
-
-
-    /*
-
-     Logger.d("%s+++++++++%s","guoyh","Success");
-                InputStream is = null;
-                OutputStream os = null;
-                try {
-                    long totalLen = responseBody.contentLength();
-                    is = responseBody.byteStream();
-                    os = new FileOutputStream(file);
-                    byte[] buffer = new byte[8 * 1024];
-                    int curlen = 0;
-                    int bufferLen = 0;
-                    while ((bufferLen = is.read(buffer)) != -1) {
-                        os.write(buffer, 0, bufferLen);
-                        os.flush();
-                        curlen += bufferLen;
-                        Logger.d("%s++++++++++%s","guoyh","++++++");
-                        callBack.onProgress((int) (curlen * 1.0f / totalLen * 100));
-                    }
-                    file.setExecutable(true,false);
-                    file.setReadable(true,false);
-                    file.setWritable(true,false);
-                    callBack.onSuccess(file);
-                }catch (Throwable ignored){
-                    ignored.printStackTrace();
-                    callBack.onFail(ignored.getMessage());
-                }finally {
-                    if (is!=null){
-                        try {
-                            is.close();
-                            if (os!=null) {
-                                os.close();
-                            }
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                            callBack.onFail(e.getMessage());
-                        }
-                    }
-                }
      */
     private void writeResponseBodyToDisk(ResponseBody body,File file,final JsDownloadListener downloadListener) {
             new Thread(new Runnable() {

@@ -26,11 +26,7 @@ import java.util.List;
 public class ListenerService extends Service {
     public static final String TASK_PACKNAME = "taskPackName";
     public static final String TASK_COM = "taskCom";
-//        private String temp = null;
-//        private List<String> mList = new ArrayList<>();
-//        private static final String TAG = "ListenerService";
         private  boolean flag = true;//服务Destroy结束线程
-//        private ActivityManager am;
         private String  taskPackName = "com.ttxmzq.pandamakemoney.asjz";
         //在这个三方应用里待了多少次 1次 0.5秒
         private int timeFlag = 0;
@@ -88,6 +84,7 @@ public class ListenerService extends Service {
                             }else{
                                 timeFlag = 0;
                             }
+
 
                             SystemClock.sleep(500);
                         }

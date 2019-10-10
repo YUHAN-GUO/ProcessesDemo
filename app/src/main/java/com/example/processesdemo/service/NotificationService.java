@@ -41,20 +41,7 @@ public class NotificationService extends Service {
     private String ns;
     private NotificationManager mNotificationManager;
     private Notification tempNotification;
-    private CLeanBroadCastReceiver cLeanBroadCastReceiver;
-    private long mAvailMem, mTotoalMem, mUsedMem;
-    @SuppressLint("HandlerLeak")
-    private Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            if (msg.what == 1) {
-                Logger.d("%s+++++++++%s", "guoyh", "handler1111111111");
-            } else if (msg.what == 2) {
-                Logger.d("%s+++++++++%s", "guoyh", "handler2222222222");
-            }
-        }
-    };
+//    private CLeanBroadCastReceiver cLeanBroadCastReceiver;
 
     @Override
     public void onCreate() {
@@ -66,10 +53,12 @@ public class NotificationService extends Service {
         appBroadCastReceiver = new AppBroadCastReceiver();
         registerReceiver(appBroadCastReceiver, iFilter);
 
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(Intent.ACTION_BATTERY_CHANGED);
-        cLeanBroadCastReceiver = new CLeanBroadCastReceiver();
-        registerReceiver(cLeanBroadCastReceiver, intentFilter);
+//        IntentFilter intentFilter = new IntentFilter();
+//        intentFilter.addAction(Intent.ACTION_BATTERY_CHANGED);
+//        cLeanBroadCastReceiver = new CLeanBroadCastReceiver();
+//        registerReceiver(cLeanBroadCastReceiver, intentFilter);
+
+
         ns = Context.NOTIFICATION_SERVICE;
         mNotificationManager = (NotificationManager) this.getSystemService(ns);
     }
@@ -168,40 +157,44 @@ public class NotificationService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-//        unregisterReceiver(appBroadCastReceiver);
-        unregisterReceiver(cLeanBroadCastReceiver);
+        unregisterReceiver(appBroadCastReceiver);
+//        unregisterReceiver(cLeanBroadCastReceiver);
     }
 
     private class AppBroadCastReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            if (action.equals(ACTION1)){
-                Logger.d("%s++++++++++++++++%s","guoyh","安装");
+            if (action.equals(ACTION1)) {
+                Logger.d("%s++++++++++++++++%s", "guoyh", "安装");
                 showCleanNotifi();
+                //获取到当前 安装应用的包名
+                String packName = intent.getData().getSchemeSpecificPart();
+                Logger.d("%s+++++++++++%s", "guoyh", "安装---"+packName);
 
             }
             if (action.equals(ACTION2)) {
-                    Logger.d("%s+++++++++++%s","guoyuhan","卸载");
                 showCleanNotifi();
-
+                //获取到当前 卸载应用的包名
+                String packName = intent.getData().getSchemeSpecificPart();
+                Logger.d("%s+++++++++++%s", "guoyh", "卸载---"+packName);
             }
 
 
         }
     }
 
-    private class CLeanBroadCastReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            if (action.equals(Intent.ACTION_BATTERY_CHANGED)) {
-                Logger.d("%s+++++++++++%s","guoyh","+++++++++++");
-                showCleanNotifi();
-
-            }
-        }
-    }
+//    private class CLeanBroadCastReceiver extends BroadcastReceiver {
+//        @Override
+//        public void onReceive(Context context, Intent intent) {
+//            String action = intent.getAction();
+//            if (action.equals(Intent.ACTION_BATTERY_CHANGED)) {
+//                Logger.d("%s+++++++++++%s", "guoyh", "+++++++++++");
+//                showCleanNotifi();
+//
+//            }
+//        }
+//    }
 
 
 }
