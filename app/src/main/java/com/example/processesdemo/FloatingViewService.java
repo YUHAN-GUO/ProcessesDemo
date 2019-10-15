@@ -68,29 +68,6 @@ public class FloatingViewService extends Service {
             }
         });
         mWindowManager.addView(mFloatingView, params);
-        //关闭FloatingView
-//        ImageView closeBtn = (ImageView) mFloatingView.findViewById(R.id.close_btn);
-//        closeBtn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                stopSelf();
-//            }
-//        });
-        //录制按钮
-//        ImageView screenBtn = (ImageView) mFloatingView.findViewById(R.id.icon_img);
-//        screenBtn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Toast.makeText(FloatingViewService.this, "点击录制", Toast.LENGTH_LONG).show();
-//            }
-//        });
-//        screenBtn.postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                Toast.makeText(FloatingViewService.this, "任务完成", Toast.LENGTH_LONG).show();
-//
-//            }
-//        },15000);
 
     }
 

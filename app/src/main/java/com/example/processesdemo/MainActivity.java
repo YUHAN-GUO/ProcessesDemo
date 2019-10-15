@@ -236,6 +236,10 @@ public class MainActivity extends RxAppCompatActivity implements View.OnClickLis
         startService(intent);
     }
 
+    /**
+     *
+     * @param b 判断是否完成任务
+     */
     private void startListenerService(boolean b) {
         Logger.d("%s+++++++++++++%s", "guoyh", "开启监听");
         Intent intent = new Intent(this, ListenerService.class);
